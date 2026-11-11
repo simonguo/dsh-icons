@@ -28,7 +28,25 @@
 
 ## 安装
 
-### 从正式发布包安装（推荐）
+### 从 npm 安装
+
+npm 包：[dsh-icons](https://www.npmjs.com/package/dsh-icons)。正式版本发布后，通过 DSH Plugin Manager 安装并启用：
+
+```json
+{"action":"install_bundle","target":"dsh-icons"}
+```
+
+或使用 DSH CLI（将 `web` 替换为实际 Profile 名称）：
+
+```sh
+dsh plugin --profile web add dsh-icons
+```
+
+**当前发布状态：npm 已建立包名，但核验时 `latest` 仍是 `0.0.0-stage` 占位版本；正式版 `1.0.1` 发布前，请使用下面的 GitHub Release 安装方式。** 不要把占位包当作可运行插件。
+
+直接 `npm install dsh-icons` 只会下载包，不会自动注册或启用 DSH 插件；一般用户应使用 DSH 插件管理。
+
+### 从正式发布包安装
 
 最新正式版：[GitHub Releases](https://github.com/simonguo/dsh-icons/releases/latest)。使用 DSH Plugin Manager 安装预构建包，不需要克隆、构建或 npm 登录：
 
@@ -39,7 +57,7 @@
 }
 ```
 
-发布页同时提供 `SHA256SUMS` 校验文件。本项目当前通过 GitHub Release 分发，尚未发布 npm 包。
+发布页同时提供 `SHA256SUMS` 校验文件。GitHub Release 安装不依赖 npm 的当前 dist-tag。
 
 ### 从源码安装
 
@@ -162,3 +180,28 @@ locale/                     插件列表的中英文元信息
 - 图标与关联规则来自 [vscode-icons/vscode-icons](https://github.com/vscode-icons/vscode-icons)，感谢上游维护者与贡献者。
 - 插件代码采用 [MIT](LICENSE) 许可证。
 - 上游图标与映射保留其 [原始 MIT 许可证](vendor/LICENSE.vscode-icons.txt)。品牌图形及商标属于各自权利人；本项目不代表 DSH、vscode-icons 或相关品牌的官方背书。
+
+## npm 自动发布（维护者）
+
+工作流：`.github/workflows/publish.yml`。在 GitHub 发布一个 Release 时自动执行，也可以在 Actions → Publish to npm → Run workflow 中手动指定现有版本标签。
+
+1. 修改 `package.json` 版本并提交代码，等待 Validate CI 通过。
+2. 创建与版本一致的标签，例如 `v1.0.2`，然后发布对应 GitHub Release。
+3. 工作流检出标签、运行校验、检查 npm 是否已有该版本，再通过 OIDC 发布公开包和 provenance。
+
+正式版本使用 `latest`，含预发布后缀的版本使用 `next`。已存在的版本跳过，不覆盖、不重新发布。默认分支普通 push 和上游图标同步 PR 不会直接发布 npm。
+
+首次使用前，在 npm 包的 Settings → Trusted Publisher 配置：
+
+| 字段 | 填写 |
+|---|---|
+| Publisher | GitHub Actions |
+| Organization or user | `simonguo` |
+| Repository | `dsh-icons` |
+| Workflow filename | `publish.yml`（只填文件名） |
+| Environment name | 留空（工作流未声明 environment） |
+| Allowed actions | 勾选 **Allow npm publish** |
+
+Label 可填 `GitHub Actions`。工作流使用 GitHub 托管 Ubuntu runner、Node.js 24、npm 11 和 `id-token: write`；不需要 `NPM_TOKEN`，不要把个人 token 或 OTP 放进工作流。
+
+Trusted Publisher 必须由 npm 包管理员在 npm 网页完成。仅添加 YAML 不会自动建立 npm 信任关系。配置完成后，可手动执行已有标签的发布以补发缺失版本；存在的版本会跳过。

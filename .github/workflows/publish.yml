@@ -1,0 +1,66 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing version tag, e.g. v1.0.1'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate version tag
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]] || exit 1
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install npm with trusted publishing support
+        run: npm install --global npm@11
+      - name: Validate package and release version
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          node --input-type=module -e "import fs from 'node:fs';const p=JSON.parse(fs.readFileSync('package.json'));if('v'+p.version!==process.env.RELEASE_TAG)throw Error('Release tag must equal package version');"
+          python3 scripts/check.py
+          node --check client.js
+          node --check index.js
+          npm pack --dry-run
+      - name: Publish via npm Trusted Publisher
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          STATUS=$(curl --silent --output /tmp/npm-version.json --write-out '%{http_code}' "https://registry.npmjs.org/$NAME/$VERSION")
+          if [ "$STATUS" = 200 ]; then
+            echo "$NAME@$VERSION already exists; skipping."
+          elif [ "$STATUS" = 404 ]; then
+            TAG=latest
+            if [[ "$VERSION" == *-* ]]; then TAG=next; fi
+            npm publish --access public --provenance --tag "$TAG"
+          else
+            echo "npm registry check failed: HTTP $STATUS"
+            exit 1
+          fi
