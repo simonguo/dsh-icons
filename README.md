@@ -8,6 +8,14 @@
 
 不另造一个文件浏览器，也不改 DSH 安装目录。开启插件后，现有文件树里的文件和文件夹直接使用 vscode-icons；关闭插件即可恢复原来的图标。
 
+## 实际效果
+
+原生文件树中的文件与文件夹图标，包含展开目录、配置文件、Python、JavaScript、JSON 等类型：
+
+<p align="center">
+  <img src="docs/images/native-file-tree.webp" alt="dsh-icons 在 DSH 原生文件树中的实际效果" width="383" />
+</p>
+
 ## 功能
 
 - **原生覆盖**：作用于 DSH「文件」页和文件预览旁复用的目录树。
