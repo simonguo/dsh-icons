@@ -30,7 +30,7 @@
 
 ### 从 npm 安装
 
-npm 包：[dsh-icons](https://www.npmjs.com/package/dsh-icons)。正式版本发布后，通过 DSH Plugin Manager 安装并启用：
+npm 包：[dsh-icons](https://www.npmjs.com/package/dsh-icons)，正式版 **1.0.1** 已发布。通过 DSH Plugin Manager 安装并启用：
 
 ```json
 {"action":"install_bundle","target":"dsh-icons"}
@@ -42,7 +42,7 @@ npm 包：[dsh-icons](https://www.npmjs.com/package/dsh-icons)。正式版本发
 dsh plugin --profile web add dsh-icons
 ```
 
-**当前发布状态：npm 已建立包名，但核验时 `latest` 仍是 `0.0.0-stage` 占位版本；正式版 `1.0.1` 发布前，请使用下面的 GitHub Release 安装方式。** 不要把占位包当作可运行插件。
+`latest` 已指向可运行的正式版本。需要固定版本时，可将安装目标写成 `dsh-icons@1.0.1`。
 
 直接 `npm install dsh-icons` 只会下载包，不会自动注册或启用 DSH 插件；一般用户应使用 DSH 插件管理。
 
