@@ -20,6 +20,19 @@
 
 ## 安装
 
+### 从正式发布包安装（推荐）
+
+最新正式版：[GitHub Releases](https://github.com/simonguo/dsh-icons/releases/latest)。使用 DSH Plugin Manager 安装预构建包，不需要克隆、构建或 npm 登录：
+
+```json
+{
+  "action": "install_bundle",
+  "target": "https://github.com/simonguo/dsh-icons/releases/download/v1.0.1/dsh-icons.tgz"
+}
+```
+
+发布页同时提供 `SHA256SUMS` 校验文件。本项目当前通过 GitHub Release 分发，尚未发布 npm 包。
+
 ### 从源码安装
 
 ```bash
@@ -44,7 +57,7 @@ cd dsh-icons
 
 本地目录安装是链接安装，请保留克隆目录。开启后查看原有「文件」页；没有新的「文件图标」面板要寻找。如果当前页面没有收到热加载，刷新 DSH 页面。需要恢复默认图标时，在插件管理中关闭 **dsh-icons**。
 
-> GitHub 开源不等于已发布到 npm 或插件市场。这里的安装说明采用本地目录方式。
+> dshmarket 市场收录申请：[awesome-dsh-plugin #14258](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/14258)。提交申请不等于已收录，以 PR 合并及目录更新为准。
 
 ## 如何实现
 
