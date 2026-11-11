@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "dsh-icons 文件图标",
+    "description": "使用本地完整 vscode-icons 图标集，直接覆盖原生文件树中的文件与文件夹图标。"
+  }
+}

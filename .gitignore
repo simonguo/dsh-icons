@@ -1,0 +1,22 @@
+# Local dependencies / packages
+node_modules/
+*.tgz
+*.vsix
+*.tar.gz
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Editor / operating system
+.DS_Store
+.idea/
+.vscode/
+
+# Local diagnostics and scratch work
+runtime-diagnostic.json
+native-icons.css
+diagnostic/
+vendor/release.json
+vendor/vscode-icons-master/

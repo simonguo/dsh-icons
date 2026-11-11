@@ -1,0 +1,48 @@
+{
+  "name": "dsh-icons",
+  "version": "1.0.1",
+  "license": "MIT",
+  "author": "Simon Guo",
+  "repository": {"type": "git", "url": "git+https://github.com/simonguo/dsh-icons.git"},
+  "homepage": "https://github.com/simonguo/dsh-icons#readme",
+  "bugs": {"url": "https://github.com/simonguo/dsh-icons/issues"},
+  "scripts": {
+    "build": "python3 scripts/build.py",
+    "sync:icons": "python3 scripts/sync_upstream.py",
+    "test": "python3 scripts/check.py && node --check client.js && node --check index.js"
+  },
+  "type": "module",
+  "description": "Replace native DSH file-tree file and folder icons with the complete local vscode-icons theme.",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json",
+    "./assets/*": "./assets/*"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE",
+    "assets/*",
+    "vendor/LICENSE.vscode-icons.txt",
+    "vendor/vsicons-icon-theme.json",
+    "vendor/upstream.json",
+    "icon-stats.json"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": ["@deepseek-ai/dsh-client-ui-renderer"]
+    }
+  }
+}

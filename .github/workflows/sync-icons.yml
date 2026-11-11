@@ -1,0 +1,64 @@
+name: Sync vscode-icons
+
+on:
+  schedule:
+    # Mondays, 02:17 UTC (10:17 Asia/Shanghai).
+    - cron: '17 2 * * 1'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Optional official release tag, e.g. v13.0.0; blank means latest'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-vscode-icons
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Download official release and generate theme
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_TAG: ${{ inputs.tag }}
+        run: |
+          if [ -n "$REQUESTED_TAG" ]; then
+            python3 scripts/sync_upstream.py --tag "$REQUESTED_TAG"
+          else
+            python3 scripts/sync_upstream.py
+          fi
+          python3 scripts/build.py
+          python3 scripts/check.py
+          node --check client.js
+      - name: Open update pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/sync-vscode-icons
+          commit-message: 'chore: sync official vscode-icons release'
+          title: 'chore: sync official vscode-icons release'
+          body: |
+            Automated synchronization of the official vscode-icons VSIX release.
+
+            Includes the complete SVG set, generated associations, upstream license,
+            SHA-256 provenance and the rebuilt DSH client. No upstream code is executed.
+            Resource, mapping, syntax and reproducibility checks passed in this job.
+
+            Please review native tree appearance and scrolling in DSH before merging.
+          add-paths: |
+            assets/
+            vendor/
+            client.js
+            icon-stats.json
